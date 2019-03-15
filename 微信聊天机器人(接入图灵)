@@ -1,1 +1,88 @@
 
+# coding:utf-8
+import json
+import requests
+from wxpy import *
+#bot = Bot()
+# bot.file_helper.send_image('ParticleSmoke.png')
+
+# 回复 my_friend 发送的消息
+# @bot.register(my_friend)
+# def reply_my_friend(msg):
+#    return 'received: {} ({})'.format(msg.text, msg.type)
+
+# 回复发送给自己的消息，可以使用这个方法来进行测试机器人而不影响到他人
+# @bot.register(bot.self, except_self=False)
+# def reply_self(msg):
+#   return 'received: {} ({})'.format(msg.text, msg.type)
+
+# 打印出所有群聊中@自己的文本消息，并自动回复相同内容
+# 这条注册消息是我们构建群聊机器人的基础
+# @bot.register(Group, TEXT)
+# def print_group_msg(msg):
+#    if msg.is_at:
+#        print(msg)
+#        msg.reply(meg.text)
+
+
+def auto_ai(text):
+    url = "http://www.tuling123.com/openapi/api"
+    api_key = "*"
+    payload = {
+        "key": api_key,
+        "info": text,
+        "userid": "666"
+    }
+    r = requests.post(url, data=json.dumps(payload))
+    result = json.loads(r.content)
+    if ('url' in result.keys()):
+        return "[阿东AI]  "+result["text"]+result["url"]
+    else:
+        return "[阿东AI]  "+result["text"]
+
+
+bot = Bot(cache_path=True)  # 登录缓存
+# bot.file_helper.send('[奸笑][奸笑]')
+print('阿东AI已经启动')
+
+boring_pengdong_group = bot.groups().search('彭老外群')[0]
+boring_bigfamily_group = bot.groups().search('')[0]
+webchat_group = bot.groups().search('')
+for group in webchat_group:
+    print(group)
+
+
+@bot.register(boring_pengdong_group)
+def group_pengdong_message(msg):
+    print('[接收]'+str(msg))
+    if (msg.type != 'Text'):
+        ret = '[奸笑][奸笑]'
+    else:
+        ret = auto_ai(msg.text)
+    print('[发送]'+str(ret))
+    return ret
+
+
+@bot.register(boring_bigfamily_group)
+def group_bigfamily_message(msg):
+    print('[接收]'+str(msg))
+    if (msg.type != 'Text'):
+        ret = '[奸笑][奸笑]'
+    else:
+        ret = auto_ai(msg.text)
+    print('[发送]'+str(ret))
+    return ret
+
+
+@bot.register(chats=[Friend])
+def forward_message(msg):
+    print('[接收]'+str(msg))
+    if (msg.type != 'Text'):
+        ret = '[奸笑][奸笑]'
+    else:
+        ret = auto_ai(msg.text)
+    print('[发送]'+str(ret))
+    return ret
+
+
+embed()
